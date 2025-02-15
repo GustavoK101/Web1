@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="form">
+        <label for="">Usuário: <br>
+            <input id="email" type="email">
+        </label><br>
+        <label for="">Senha: <br>
+            <input id="password" type="password">
+        </label><br>
+        <input type="submit" value="Login">
+    </form>
+
+    
+    <script type="module">
+        import db from './js/db.js';
+        document.getElementById("form").addEventListener("submit", function(event){
+            event.preventDefault()
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value; 
+            let user = db.users.find(email)
+            if(user && user.password === password){
+                alert("Login realizado com sucesso")
+            }else{
+                alert("Usuário ou senha incorreto")
+            }
+        })
+
+        const validateLogin = () => {
+
+        }
+    </script>
+</body>
+</html>
