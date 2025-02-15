@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="login-page">
+<h1>Login</h1>
+<form id="form">
+    <label>Email: <br>
+        <input id="email" type="email" value="admin@utfpr.edu.br">
+    </label>
+    <label>Senha: <br>
+        <input id="password" type="password" value="123456">
+    </label>
+    <input type="submit" value="Login">
+</form>
+
+
+<script type="module">
+    import db from '../js/db';
+
+    const checkLogin = (email, password) => {
+        if (db.users.checkLogin(email, password)) {
+            alert("Login realizado com sucesso")
+        } else {
+            alert("Usuário ou senha incorreto")
+        }
+    }
+
+    document.getElementById("form").addEventListener("submit", function (event) {
+        event.preventDefault()
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        checkLogin(email, password)
+    })
+
+</script>
+</body>
+</html>

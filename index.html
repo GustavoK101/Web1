@@ -2,61 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Schloß Hotel</title>
+    <link rel="stylesheet" href="/css/style.css">
+
 </head>
 <body>
-<form id="form">
-    <label for="email">
-        Email
-        <input type="text" name="email" id="email">
-    </label>
-    <label for="password">
-        Password
-        <input type="text" name="password" id="password">
-    </label>
-    <button type="submit">Submit</button>
-</form>
+<iframe src="/components/header.html" name="header" class="navigation-frame"></iframe>
 
+<iframe name="main" src="/home/"></iframe>
 
-<script src="/js/db.js" type="module"></script>
-
-<script type="module">
-    import db from './js/db.js';
-
-    const users = db.users.listAll();
-
-    for (let user of users) {
-        const div = document.createElement('div');
-        const email = document.createElement('span');
-        const removeButton = document.createElement('button');
-        email.innerHTML = user.email;
-        removeButton.innerHTML = 'Remove';
-        removeButton.addEventListener('click', function () {
-            db.users.remove(user.email);
-            window.location.reload();
-        });
-        div.appendChild(email);
-        div.appendChild(removeButton);
-        document.body.appendChild(div);
-
-    }
-
-    for (let room of db.rooms.listAll()) {
-        const div = document.createElement('div');
-        console.log(room)
-        div.innerHTML = room.name;
-        document.body.appendChild(div);
-    }
-
-
-    document.getElementById('form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        db.users.save({email, password});
-        window.location.reload();
-    });
-
-
-</script>
 </body>
 </html>
