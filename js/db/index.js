@@ -1,4 +1,5 @@
 import users from "./users.js";
 import rooms from "./rooms.js";
+import bookings from "./bookings.js";
 
-export default { users, rooms };
+export default { users, rooms, bookings };

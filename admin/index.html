@@ -3,39 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Document</title>
+    <title>Administração</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="login-page">
-<h1>Login</h1>
-<form id="form">
-    <label>Email: <br>
-        <input id="email" type="email" value="admin@utfpr.edu.br">
-    </label>
-    <label>Senha: <br>
-        <input id="password" type="password" value="123456">
-    </label>
-    <input type="submit" value="Login">
-</form>
+<body>
+<div id="app" class="container invisible admin-container">
+    <iframe src="./components/sidebar.html" name="sidebar" class="sidebar-frame"></iframe>
+    <iframe src="./dashboard/" name="main" class="main-frame"></iframe>
+</div>
 
 
 <script type="module">
-    import db from '../js/db';
+    import db from '/js/db/index.js';
 
-    const checkLogin = (email, password) => {
-        if (db.users.checkLogin(email, password)) {
-            alert("Login realizado com sucesso")
-        } else {
-            alert("Usuário ou senha incorreto")
-        }
+    const currentUser = db.users.getCurrentUser();
+    console.log(currentUser);
+    if (currentUser) {
+        document.getElementById("app").classList.remove("invisible");
+    } else {
+        window.location.href = "/admin/login.html";
     }
 
-    document.getElementById("form").addEventListener("submit", function (event) {
-        event.preventDefault()
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        checkLogin(email, password)
-    })
+
+    const logout = () => {
+        db.users.saveCurrentUser(null);
+        window.location.href = "/admin/login.html";
+    }
+
 
 </script>
 </body>
