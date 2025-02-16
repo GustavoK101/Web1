@@ -35,6 +35,21 @@ const defaultBookings = [
   },
 ];
 
+// update all dates to a random date between today and 7 days ago
+
+const today = new Date();
+const sevenDaysAgo = new Date(today);
+sevenDaysAgo.setDate(today.getDate() - 7);
+
+defaultBookings.forEach((booking) => {
+  const randomDate = new Date(
+    sevenDaysAgo.getTime() +
+      Math.random() * (today.getTime() - sevenDaysAgo.getTime()),
+  );
+  booking.checkIn = randomDate.toISOString().split("T")[0];
+  booking.checkOut = randomDate.toISOString().split("T")[0];
+});
+
 const bookingData = loadDb("bookings");
 
 if (!bookingData || bookingData.length === 0) {
@@ -47,7 +62,12 @@ const saveBookings = () => {
 
 export default {
   listAll: () => {
-    return bookingData.map((room) => ({ ...room }));
+    // ordered by checkIn date desc
+    return bookingData
+      .sort((a, b) => {
+        return new Date(b.checkIn) - new Date(a.checkIn);
+      })
+      .map((booking) => ({ ...booking }));
   },
   find: (roomId, date, startTime) => {
     let booking = bookingData.find(
