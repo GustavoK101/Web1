@@ -46,6 +46,34 @@
             border-bottom: 1px solid #ddd;
         }
 
+        .confirmed {
+            background: #e6ffed;
+
+            .confirm-button {
+                background: #dc3545;
+            }
+        }
+
+        .unconfirmed {
+            /*yellowish*/
+            background: #fff5df;
+        }
+
+        .confirm-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .confirm-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+
     </style>
 </head>
 <body>
@@ -56,8 +84,8 @@
 
     <div class="stats-grid">
         <div class="stat-card">
-            <h3>Reservas Ativas</h3>
-            <p>24</p>
+            <h3>Reservas Confirmadas</h3>
+            <p id="active-bookings">--</p>
         </div>
         <div class="stat-card">
             <h3>Quartos Disponíveis</h3>
@@ -78,22 +106,15 @@
         <table>
             <thead>
             <tr>
-                <th>Nome</th>
+                <th>Quarto</th>
+                <th>Email</th>
                 <th>Check-in</th>
                 <th>Check-out</th>
-                <th>Quarto</th>
-                <th>Status</th>
+                <th>Confirmação</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>João Silva</td>
-                <td>15/03/2024</td>
-                <td>20/03/2024</td>
-                <td>Suíte Premium</td>
-                <td>Confirmado</td>
-            </tr>
-            <!-- Add more rows dynamically from backend -->
+            <!-- dados adicionados via js-->
             </tbody>
         </table>
     </div>
@@ -113,7 +134,90 @@
     db.users.checkUserLoggedIn();
 
     // Fetch recent bookings from the database
-    const recentBookings = db.bookings.getRecentBookings();
+    const recentBookings = db.bookings.listAll();
+    const rooms = db.rooms.listAll();
+    const roomMap = new Map();
+    rooms.forEach(room => {
+        roomMap.set(room.id, room);
+    });
+
+    const render = () => {
+
+
+        const tbody = document.querySelector("tbody");
+        // drop all rows
+        tbody.innerHTML = "";
+
+
+        recentBookings.forEach(booking => {
+            const room = roomMap.get(booking.roomId);
+
+            const checkinDate = new Date(booking.checkIn).toLocaleDateString("pt-BR");
+            const checkoutDate = new Date(booking.checkOut).toLocaleDateString("pt-BR");
+
+
+            const tr = document.createElement("tr");
+
+            const attributes = [room.name, booking.userEmail, checkinDate, checkoutDate];
+            attributes.forEach(attr => {
+                const td = document.createElement("td");
+                td.textContent = attr;
+                tr.appendChild(td);
+            });
+
+            const td = document.createElement("td");
+            const confirmButton = document.createElement("button");
+            confirmButton.classList.add("confirm-button");
+
+            let confirmarReserva = () => {
+                db.bookings.confirmBooking(booking.id);
+                booking.confirmed = true;
+                confirmButton.textContent = "Revogar";
+                tr.classList.remove("unconfirmed");
+                tr.classList.add("confirmed");
+            };
+            let revogarReserva = () => {
+                booking.confirmed = false;
+                db.bookings.revokeConfirmation(booking.id);
+                confirmButton.textContent = "Confirmar";
+                confirmButton.disabled = false;
+                tr.classList.remove("confirmed");
+                tr.classList.add("unconfirmed");
+            };
+
+            let toggleButton = () => {
+                if (booking.confirmed) {
+                    revogarReserva();
+                } else {
+                    confirmarReserva();
+                }
+                render();
+            };
+
+
+            td.appendChild(confirmButton);
+            tr.appendChild(td);
+
+            confirmButton.addEventListener("click", toggleButton);
+
+            if (!booking.confirmed) {
+                confirmButton.textContent = "Confirmar";
+                tr.classList.add("unconfirmed");
+            } else {
+                confirmButton.textContent = "Revogar";
+                tr.classList.add("confirmed");
+            }
+            tbody.appendChild(tr);
+
+
+            const activeBookings = recentBookings.filter(booking => booking.confirmed).length;
+            document.getElementById("active-bookings").textContent = `${activeBookings}`;
+
+
+        });
+    }
+
+    render();
 
 
 </script>
