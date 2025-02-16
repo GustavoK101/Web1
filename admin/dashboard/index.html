@@ -73,6 +73,98 @@
             cursor: not-allowed;
         }
 
+        #occupation-graph {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+            gap: 10px;
+        }
+
+        .room-row {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 4px 8px;
+
+            &:hover {
+                .square {
+                    color: white;
+                    transition: color 400ms;
+                }
+            }
+        }
+
+        .squares-container {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+
+        .square {
+            width: 1fr;
+            height: 20px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            display: inline-block;
+            margin: 2px;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.75em;
+
+            color: transparent;
+
+            &:hover {
+                opacity: 0.8;
+                transition: color 400ms;
+            }
+
+        }
+
+        .booked {
+            background: #007bff;
+
+            &:hover {
+                opacity: 0.8;
+                color: white;
+                transition: color 400ms;
+                font-weight: bold;
+            }
+
+            &.low {
+                /* lighter red*/
+                background: #ffd1d1;
+            }
+
+            &.medium {
+                /*MEDIUD REDISH*/
+                background: #ff7f7f;
+            }
+
+            &.high {
+                background: #ff0000;
+            }
+
+        }
+
+        .today {
+            border: 1px solid #007bff;
+        }
+
+        .room-name {
+            font-weight: bold;
+            font-size: 0.75em;
+            /*    no wrap*/
+            white-space: nowrap;
+            /*    truncate overflow*/
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .divider {
+            margin: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
 
     </style>
 </head>
@@ -99,6 +191,7 @@
 
     <div class="recent-bookings">
         <h2>Reservas Recentes</h2>
+        <div class="divider"></div>
         <table>
             <thead>
             <tr>
@@ -116,11 +209,9 @@
     </div>
 
     <div class="stat-card" style="margin-top: 20px;">
-        <h3>Gráfico de Ocupação</h3>
-        <!--        custom canvas-->
-        <div style="height: 300px; background: #f0f0f0; border-radius: 8px;">
-            <canvas id="occupation-graph" width="900" height="300"></canvas>
-        </div>
+        <h3>Reservas (últimos 30 dias)</h3>
+        <div class="divider"></div>
+        <div id="occupation-graph"></div>
     </div>
 </main>
 
@@ -130,7 +221,7 @@
     db.users.checkUserLoggedIn();
 
     // Fetch recent bookings from the database
-    const recentBookings = db.bookings.listAll();
+    const recentBookings = db.bookings.listAll().slice(0, 5);
     const rooms = db.rooms.listAll();
     const roomMap = new Map();
     rooms.forEach(room => {
@@ -206,44 +297,88 @@
             tbody.appendChild(tr);
 
 
-            const activeBookings = recentBookings.filter(booking => booking.confirmed).length;
-            document.getElementById("active-bookings").textContent = `${activeBookings}`;
-
-
         });
 
 
-        const canvas = document.getElementById("occupation-graph");
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const activeBookings = db.bookings.listAll().filter(booking => booking.confirmed);
+        document.getElementById("active-bookings").textContent = `${activeBookings.length}`;
 
-        const bookingsPerDay = recentBookings
-            .filter(booking => booking.confirmed)
-            .reduce((acc, booking) => {
-                const checkInDate = new Date(booking.checkIn).toLocaleDateString("pt-BR");
-                if (acc[checkInDate]) {
-                    acc[checkInDate]++;
-                } else {
-                    acc[checkInDate] = 1;
-                }
-                return acc;
-            }, {});
+        const occupationStats = document.getElementById("occupation-graph");
+        occupationStats.innerHTML = "";
 
-        const initialDate = new Date();
-        initialDate.setDate(initialDate.getDate() - 7);
+        //     create a row for each room, with a square representing the each day for the past 14 days
+
         const today = new Date();
+        const days = 30;
+
+        const rows = Array.from({length: rooms.length}, (_, i) => {
+            const room = rooms[i];
+            const row = document.createElement("div");
+            row.classList.add("room-row");
+
+            const roomName = document.createElement("span");
+            roomName.classList.add("room-name");
+            roomName.textContent = room.name;
+            row.appendChild(roomName);
+
+            const squaresContainer = document.createElement("div");
+            squaresContainer.classList.add("squares-container");
+
+            // ultima semana
+            let startDate = new Date(today);
+            startDate.setDate(today.getDate() - days);
+            // set time to 00:00:00
+            startDate.setHours(0, 0, 0, 0);
+            let dates = [];
+            for (let i = 0; i <= days; i++) {
+                dates.push(new Date(startDate));
+                startDate.setDate(startDate.getDate() + 1);
+            }
+            dates.reverse();
+
+            for (let startDate of dates) {
+                const square = document.createElement("div");
+                square.classList.add("square");
 
 
-        while (initialDate <= today) {
-            const bookings = bookingsPerDay[initialDate.toLocaleDateString("pt-BR")] || 0;
-            ctx.fillStyle = "#007bff";
-            ctx.fillRect(initialDate.getDay() * 100, 300 - bookings * 50, 50, bookings * 450);
-            ctx.fillStyle = "black";
-            // ctx.fillText(bookings, initialDate.getDay() * 100, 300 - bookings * 10 - 10);
-            initialDate.setDate(initialDate.getDate() + 1);
-        }
+                if (startDate.toDateString() === today.toDateString()) {
+                    square.classList.add("today");
+                }
+
+                const bookings = activeBookings
+                    .filter(booking => booking.roomId === room.id)
+                    .filter(booking => {
+                        const checkin = new Date(booking.checkIn);
+                        const checkout = new Date(booking.checkOut);
+                        checkin.setHours(0, 0, 0, 0);
+                        checkout.setHours(0, 0, 0, 0);
+                        return (startDate >= checkin) && (startDate <= checkout);
+                    });
+                if (bookings.length > 0) {
+                    square.textContent = bookings.length;
+                    square.classList.add("booked");
+                }
+
+                if (bookings.length >= 3) {
+                    square.classList.add("high");
+                } else if (bookings.length > 1) {
+                    square.classList.add("medium");
+                } else if (bookings.length > 0) {
+                    square.classList.add("low");
+                }
+
+                // add tooltip with date
+                square.title = startDate.toLocaleDateString("pt-BR");
 
 
+                squaresContainer.appendChild(square);
+                startDate.setDate(startDate.getDate() + 1);
+            }
+            row.appendChild(squaresContainer);
+            return row;
+        });
+
+        rows.forEach(row => occupationStats.appendChild(row));
     };
 
     render();

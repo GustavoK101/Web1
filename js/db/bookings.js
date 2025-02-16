@@ -1,6 +1,6 @@
 import { loadDb, saveDb } from "./data.js";
 
-const defaultBookings = [
+const sampleBookings = [
   {
     id: 1,
     roomId: 1,
@@ -35,20 +35,39 @@ const defaultBookings = [
   },
 ];
 
-// update all dates to a random date between today and 7 days ago
-
+const names = ["joao", "maria", "jose", "ana", "pedro", "lucas"];
+const lastNames = ["silva", "souza", "santos", "oliveira", "costa", "pereira"];
+const userDomains = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com"];
+const rooms = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const defaultBookings = [];
+// generate 100 random bookings for the past 30 days
 const today = new Date();
-const sevenDaysAgo = new Date(today);
-sevenDaysAgo.setDate(today.getDate() - 7);
+const thirtyDaysAgo = new Date(today);
+thirtyDaysAgo.setDate(today.getDate() - 30);
 
-defaultBookings.forEach((booking) => {
-  const randomDate = new Date(
-    sevenDaysAgo.getTime() +
-      Math.random() * (today.getTime() - sevenDaysAgo.getTime()),
+for (let i = 0; i < 100; i++) {
+  const checkIn = new Date(
+    thirtyDaysAgo.getTime() +
+      Math.random() * (today.getTime() - thirtyDaysAgo.getTime()),
   );
-  booking.checkIn = randomDate.toISOString().split("T")[0];
-  booking.checkOut = randomDate.toISOString().split("T")[0];
-});
+  const checkOut = new Date(checkIn);
+  checkOut.setDate(checkIn.getDate() + 1);
+
+  let domain = userDomains[Math.floor(Math.random() * userDomains.length)];
+  let user = `${names[Math.floor(Math.random() * names.length)]}`;
+  user += `${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+
+  const booking = {
+    id: i + 1,
+    roomId: rooms[Math.floor(Math.random() * rooms.length)],
+    userEmail: `${user}@${domain}`,
+    checkIn: checkIn.toISOString().split("T")[0],
+    checkOut: checkOut.toISOString().split("T")[0],
+    confirmed: true,
+  };
+
+  defaultBookings.push(booking);
+}
 
 const bookingData = loadDb("bookings");
 
