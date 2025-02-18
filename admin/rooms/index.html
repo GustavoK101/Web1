@@ -7,22 +7,87 @@
     <link rel="stylesheet" href="/css/style.css">
     <script src="/js/db/index.js" type="module"></script>
 </head>
-rrroommomm
+<body>
+<div class="container column card ml-1">
+    <div class="row">
+        <div class="grow-1">
+            <h1>Quartos</h1>
+        </div>
+        <div class="col-auto">
+            <button id="add-room" class="primary-button">Novo quarto</button>
+        </div>
+    </div>
+    <div class="row">
+        <table>
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Amenidades</th>
+                <th>Capacidade</th>
+                <th>Preço/dia</th>
+                <th>#</th>
+            </tr>
+            </thead>
+            <tbody id="rooms">
+            </tbody>
+        </table>
+    </div>
+</div>
 <template id="room-template">
     <tr>
-        <td>101</td>
-        <td>1</td>
-        <td>1</td>
-        <td>1</td>
-        <td>1</td>
-        <td>
-            <button class="edit">Editar</button>
-            <button class="delete">Excluir</button>
+        <td>nome</td>
+        <td>descrição</td>
+        <td>amenidades</td>
+        <td>preço</td>
+        <td>capacidade</td>
+        <td style="min-width: 200px;">
+            <button class="edit primary-button">Editar</button>
+            <button class="delete error-button">Excluir</button>
         </td>
     </tr>
 </template>
 
-<body>
+<script type="module">
+    import db from '/js/db/index.js';
+
+
+    const render = () => {
+
+        const rooms = db.rooms.listAll();
+        const roomTemplate = document.getElementById("room-template");
+        const roomsContainer = document.getElementById("rooms");
+
+        rooms.forEach(room => {
+            const roomElement = roomTemplate.content.cloneNode(true);
+            roomElement.querySelector("td:nth-child(1)").textContent = room.name;
+            roomElement.querySelector("td:nth-child(2)").textContent = room.description;
+            roomElement.querySelector("td:nth-child(3)").textContent = room.amenities.join(", ");
+            roomElement.querySelector("td:nth-child(4)").textContent = room.capacity;
+            roomElement.querySelector("td:nth-child(5)").textContent = room.price;
+
+
+            roomElement.querySelector(".edit").addEventListener("click", () => {
+                window.location.href = `/admin/rooms/edit.html?id=${room.id}`;
+            });
+
+            roomElement.querySelector(".delete").addEventListener("click", () => {
+                db.rooms.remove(room.id);
+                window.location.reload();
+            });
+
+            roomsContainer.appendChild(roomElement);
+        });
+
+        document.getElementById("add-room").addEventListener("click", () => {
+            window.location.href = "/admin/rooms/add.html";
+        });
+    }
+
+    render();
+
+</script>
+
 
 </body>
 </html>

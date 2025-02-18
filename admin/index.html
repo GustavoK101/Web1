@@ -6,14 +6,21 @@
     <title>Administração</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body class="overflow-hidden">
 <div id="app" class="container invisible admin-container">
-    <iframe src="./components/sidebar.html" name="sidebar" class="sidebar-frame"></iframe>
-    <iframe src="./dashboard/" name="main" class="main-frame"></iframe>
+    <div class="row">
+        <div style="width: 250px;">
+            <iframe src="./components/sidebar.html" name="sidebar" class="sidebar-frame w-100 h-100"></iframe>
+        </div>
+        <div class="col-auto grow-1 overflow-hidden">
+            <iframe src="./dashboard/" name="main" class="w-100  h-100"></iframe>
+        </div>
+    </div>
 </div>
 
 
-<script type="module">
+<script type=" module
+            ">
     import db from '/js/db/index.js';
 
     const currentUser = db.users.getCurrentUser();

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<main class="main-content">
+<main class="pa-4">
     <div class="stats-grid">
         <div class="stat-card">
             <h3>Reservas Confirmadas</h3>
@@ -75,7 +75,8 @@
 
 
         recentBookings.forEach(booking => {
-            const room = roomMap.get(booking.roomId);
+            const room = roomMap.get(booking.roomId) || {name: "[apagado]"};
+
 
             const checkinDate = new Date(booking.checkIn).toLocaleDateString("pt-BR");
             const checkoutDate = new Date(booking.checkOut).toLocaleDateString("pt-BR");

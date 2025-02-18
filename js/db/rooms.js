@@ -13,6 +13,7 @@ const defaultRooms = [
       "Minibar premium",
       "Room service 24h",
     ],
+    price: 250, // in reals
   },
   {
     id: 2,
@@ -26,6 +27,7 @@ const defaultRooms = [
       "Flip chart",
       "Coffee break executivo",
     ],
+    price: 150,
   },
   {
     id: 3,
@@ -39,6 +41,7 @@ const defaultRooms = [
       "Frigobar",
       "Serviço de lavanderia",
     ],
+    price: 100,
   },
   {
     id: 4,
@@ -52,6 +55,7 @@ const defaultRooms = [
       "Kit chá/café premium",
       "Toalhas de algodão egípcio",
     ],
+    price: 180,
   },
   {
     id: 5,
@@ -65,6 +69,7 @@ const defaultRooms = [
       "16 Mesas retráteis",
       "Iluminação profissional",
     ],
+    price: 300,
   },
   {
     id: 6,
@@ -78,6 +83,7 @@ const defaultRooms = [
       "Área de churrasco",
       "Estacionamento privativo",
     ],
+    price: 120,
   },
   {
     id: 7,
@@ -91,6 +97,7 @@ const defaultRooms = [
       "Automação residencial",
       "Escritório integrado",
     ],
+    price: 200,
   },
   {
     id: 8,
@@ -104,6 +111,7 @@ const defaultRooms = [
       "Kits de treinamento",
       "Água mineral ilimitada",
     ],
+    price: 250,
   },
   {
     id: 9,
@@ -117,6 +125,7 @@ const defaultRooms = [
       "Isolamento acústico",
       "Máquina de espresso",
     ],
+    price: 150,
   },
   {
     id: 10,
@@ -130,6 +139,7 @@ const defaultRooms = [
       "Despertador personalizado",
       "Robô aspirador",
     ],
+    price: 220,
   },
 ];
 const roomData = loadDb("rooms");

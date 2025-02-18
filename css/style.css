@@ -41,13 +41,7 @@
 }
 
 iframe {
-    width: 100%;
-    height: 50px;
     border: none;
-
-    &[name="main"] {
-        height: 100%;
-    }
 }
 
 .fadeIn {
@@ -67,14 +61,6 @@ iframe {
 }
 
 
-.container {
-    display: flex;
-    flex-direction: row;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-
 .admin-container {
     display: flex;
     height: 100%;
@@ -82,13 +68,7 @@ iframe {
     padding: 0;
 }
 
-.main-frame {
-    flex: 1;
-    padding: 20px;
-}
-
 .sidebar-frame {
-    width: 200px;
     height: 100%;
     overflow: auto;
     background-color: var(--primary-color);
@@ -136,8 +116,16 @@ th, td {
     }
 }
 
+.error-button {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-.confirm-button {
+.confirm-button, .primary-button {
     background: var(--link-color);
     color: white;
     border: none;
