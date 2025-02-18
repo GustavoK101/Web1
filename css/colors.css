@@ -1,0 +1,18 @@
+
+:root {
+    --primary-color: #cd412a;
+    --secondary-color: #f4f4f4;
+    --accent-color: #932acd;
+    --danger-color: #e74c3c;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --info-color: #3498db;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --link-color: #007bff;
+    --link-hover-color: #0056b3;
+    --sidebar-border-color: var(--danger-color);
+    --sidebar-background-hover-color: var(--accent-color);
+    --divider-color: #e0e0e0;
+
+}
