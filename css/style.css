@@ -11,6 +11,10 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.header-row {
+    max-height: 50px;
+}
+
 .navigation-bar {
     background-color: var(--primary-color);
     overflow: auto;

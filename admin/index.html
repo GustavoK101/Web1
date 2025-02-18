@@ -4,23 +4,20 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Administração</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link href="/css/style.css" rel="stylesheet">
 </head>
 <body class="overflow-hidden">
-<div id="app" class="container invisible admin-container">
-    <div class="row">
-        <div style="width: 250px;">
-            <iframe src="./components/sidebar.html" name="sidebar" class="sidebar-frame w-100 h-100"></iframe>
-        </div>
-        <div class="col-auto grow-1 overflow-hidden">
-            <iframe src="./dashboard/" name="main" class="w-100  h-100"></iframe>
-        </div>
+<div class="container invisible admin-container flex-row" id="app">
+    <div style="width: 250px;">
+        <iframe class="sidebar-frame w-100 h-100" name="sidebar" src="./components/sidebar.html"></iframe>
+    </div>
+    <div class="col-auto grow-1 overflow-hidden">
+        <iframe class="w-100  h-100" name="main" src="./dashboard/"></iframe>
     </div>
 </div>
 
 
-<script type=" module
-            ">
+<script type="module">
     import db from '/js/db/index.js';
 
     const currentUser = db.users.getCurrentUser();

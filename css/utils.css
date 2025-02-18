@@ -45,6 +45,10 @@
     padding-right: 40px;
 }
 
+.py-0, .pa-0 {
+    padding: 0;
+}
+
 .py-1, .pa-1 {
     padding-top: 10px;
     padding-bottom: 10px;
@@ -175,6 +179,10 @@
 .my-4, .ma-4 {
     margin-top: 40px;
     margin-bottom: 40px;
+}
+
+.ma-0 {
+    margin: 0;
 }
 
 
