@@ -5,8 +5,176 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Administração</title>
     <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/db/index.js" type="module"></script>
 </head>
+<style>
+
+    tr {
+
+        input {
+            display: none;
+        }
+    }
+
+    tr.editing {
+        .label {
+            display: none;
+        }
+
+        input {
+            display: block;
+        }
+    }
+</style>
 <body>
-Serviços
+<div class="container column card ml-1">
+    <div class="row">
+        <div class="grow-1">
+            <h1>Serviços</h1>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-10">
+            <input type="text" id="new-amenity" class="input" placeholder="Novo serviço">
+
+        </div>
+        <div class="col-2">
+            <input type="submit" id="add-amenity" class="primary-button" value="Adicionar">
+        </div>
+    </div>
+    <div class="row">
+        <table>
+            <thead>
+            <tr>
+                <th>Descrição</th>
+                <th class="right">#</th>
+            </tr>
+            </thead>
+            <tbody id="services">
+            </tbody>
+        </table>
+    </div>
+</div>
+<template id="amenity-template">
+    <tr>
+        <td class="amenity">
+            <div class="label">
+                descrição
+            </div>
+            <div class="amenity-edit">
+                <input type="text" class="input" value="descrição">
+            </div>
+        </td>
+        <td style="min-width: 100px;" class="right">
+            <button class="edit primary-button">Editar</button>
+            <button class="delete error-button">Excluir</button>
+        </td>
+    </tr>
+</template>
+
+<script type="module">
+    import db from '/js/db/index.js';
+
+
+    const render = () => {
+
+        const amenities = db.amenities.listAll();
+        const template = document.getElementById("amenity-template");
+        const container = document.getElementById("services");
+        container.innerHTML = "";
+
+        amenities.forEach(amenity => {
+            const amenityElement = template.content.cloneNode(true);
+
+            let label = amenityElement.querySelector(".amenity .label");
+            label.setAttribute("data-original-value", amenity);
+            label.textContent = amenity;
+            amenityElement.querySelector(".amenity-edit .input").value = amenity;
+
+
+            amenityElement.querySelector(".edit").addEventListener("click", (ev) => {
+                const tr = ev.target.closest("tr");
+                tr.classList.toggle("editing");
+
+
+            });
+
+            // add event lister for label click
+            label.addEventListener("click", () => {
+                const tr = label.closest("tr");
+                tr.classList.toggle("editing");
+
+                const input = tr.querySelector("input");
+                input.focus();
+
+                // add event listener for enter key
+                input.addEventListener("keydown", (ev) => {
+                    if (ev.key === "Enter") {
+                        input.blur();
+                    }
+                });
+            });
+
+            const input = amenityElement.querySelector("input");
+
+            // add event listener for enter key
+            input.addEventListener("keydown", (ev) => {
+                if (ev.key === "Enter") {
+                    input.blur();
+                }
+            });
+
+
+            input.addEventListener("blur", () => {
+                const tr = input.closest("tr");
+                tr.classList.toggle("editing");
+                if (input.value === "") {
+                    input.value = input.getAttribute("data-original-value");
+                }
+                const ogValue = tr.querySelector(".label").getAttribute("data-original-value");
+                tr.querySelector(".amenity .label").textContent = input.value;
+                db.amenities.remove(ogValue);
+                db.amenities.save(input.value);
+                tr.querySelector(".label").setAttribute("data-original-value", input.value);
+                render();
+            });
+
+            amenityElement.querySelector(".delete").addEventListener("click", () => {
+                db.amenities.remove(amenity);
+                window.location.reload();
+            });
+
+            container.appendChild(amenityElement);
+        });
+
+        document.getElementById("add-amenity").addEventListener("click", () => {
+            const newAmenity = document.getElementById("new-amenity").value;
+
+            if (newAmenity === "") {
+                return;
+            }
+
+            db.amenities.save(newAmenity);
+            // reset input
+            document.getElementById("new-amenity").value = "";
+
+            render();
+        });
+
+        //     add enter key event listener
+        document.getElementById("new-amenity").addEventListener("keydown", (ev) => {
+            if (ev.key === "Enter") {
+                document.getElementById("add-amenity").click();
+            }
+        });
+
+
+    }
+
+    render();
+
+</script>
+
+
 </body>
 </html>

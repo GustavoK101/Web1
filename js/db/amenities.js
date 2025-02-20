@@ -55,7 +55,7 @@ const saveAmenities = () => {
 
 export default {
   listAll: () => {
-    return amenitiesData.map((amenity) => amenity);
+    return amenitiesData.sort((a, b) => a.localeCompare(b));
   },
 
   save: (amenity) => {
