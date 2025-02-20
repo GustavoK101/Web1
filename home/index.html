@@ -6,37 +6,36 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <style>
-
-    body {
+    .services{
+        padding: 5vh 20vw;
+    }
+    .local{
+        padding: 5vh 20vw;
+    }
+    #mainImage {
+        border-radius: 5%;
+        width: 50%;
+        height: 50vh;
+        margin-bottom: 20px;
+    }
+    .images{
         justify-items: center;
         align-items: center;
         display: flex;
         flex-direction: column;     
         margin: 0;
     }
-
-    #mainImage {
-        width: 50%;
-        height: 50vh;
-        margin-bottom: 20px;
-    }
-
     .thumbnails {
-        border-left: 10%;
-        border-right: 10%;
+        padding: 0 14vw;
         display: flex;
         flex-direction: row;
         gap: 10px;
         justify-content: center;
 
         img {
+            border-radius: 5%;
             width: 20%;
         }
-    }
-    .backgroundimg{
-        height: 50vh;
-        width: 100%;
-        filter: blur(5px);
     }
     .background-container {
         position: relative;
@@ -46,10 +45,15 @@
         justify-content: center;
         align-items: center;
     }
+    .backgroundimg{
+        height: 50vh;
+        width: 100%;
+        filter: blur(5px);
+    }
     .overlay-text {
         position: absolute;
         top: 5%;
-        left: 5%;
+        left: 20%;
         color: white;
         font-size: 3rem;
         font-weight: bold;
@@ -62,7 +66,7 @@
     .overlay-button{
         padding: 10px;
         top: 80%;
-        left:5%;
+        left:20%;
         position: absolute;
         background-color: #cd412a;
         border-radius: 5px;
@@ -80,23 +84,26 @@
         <p class="overlay-text overlay-text-small"> Conforto, elegância e uma vista deslumbrante.<br> O lugar perfeito para relaxar e aproveitar uma estadia inesquecível!</p>
         <button class="overlay-button">Faça sua Reserva</button>
     </div>
-<h1>Serviços:</h1>
-<p>Oferecemos serviços de alta qualidade para sua comodidade, incluindo café da manhã completo, Wi-Fi gratuito, piscina, academia, estacionamento e atendimento 24h. Tudo para garantir uma estadia confortável e inesquecível!</p>
-<h1>Imagens:</h1>
-<img id="mainImage" src="image.png" alt="">
-<div class="thumbnails">
-    <img src="image.png" alt="Imagem 3" onmouseover="changeImage(this)">
-    <img src="img1.png" alt="Imagem 1" onmouseover="changeImage(this)">
-    <img src="img2.png" alt="Imagem 2" onmouseover="changeImage(this)">
-    <img src="img3.png" alt="Imagem 4" onmouseover="changeImage(this)">
-</div>
-<h1>Localização:</h1>
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2683.224440480485!2d-53.06605151343061!3d-25.757198814354453!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94f047a2e9c81dd3%3A0xe5d0bda19ea24e41!2sHotel%20Lago%20Dourado!5e0!3m2!1spt-BR!2sbr!4v1739664837077!5m2!1spt-BR!2sbr"
-    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-    referrerpolicy="no-referrer-when-downgrade">
-</iframe>
-
-
+    <div class="services">
+        <h1>Serviços:</h1>
+        <p>Oferecemos serviços de alta qualidade para sua comodidade, incluindo café da manhã completo, Wi-Fi gratuito, piscina, academia, estacionamento e atendimento 24h. Tudo para garantir uma estadia confortável e inesquecível!</p>
+    </div>
+    <div class="images">
+        <img id="mainImage" src="image.png" alt="">
+        <div class="thumbnails">
+            <img src="image.png" alt="Imagem 3" onmouseover="changeImage(this)">
+            <img src="img1.png" alt="Imagem 1" onmouseover="changeImage(this)">
+            <img src="img2.png" alt="Imagem 2" onmouseover="changeImage(this)">
+            <img src="img3.png" alt="Imagem 4" onmouseover="changeImage(this)">
+        </div>
+    </div>
+    <div class="local">
+        <h1>Localização:</h1>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2683.224440480485!2d-53.06605151343061!3d-25.757198814354453!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94f047a2e9c81dd3%3A0xe5d0bda19ea24e41!2sHotel%20Lago%20Dourado!5e0!3m2!1spt-BR!2sbr!4v1739664837077!5m2!1spt-BR!2sbr"
+            width="1140px" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
 </body>
 <script>
     function changeImage(imgElement) {
