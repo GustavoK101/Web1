@@ -6,27 +6,22 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <style>
-    .services{
-        padding: 5vh 20vw;
-    }
-    .local{
-        padding: 5vh 20vw;
-    }
     #mainImage {
         border-radius: 5%;
-        width: 50%;
-        height: 50vh;
+        width: auto;
+        height: 480px;
+        max-width: 960px;
         margin-bottom: 20px;
     }
-    .images{
+
+    .images {
         justify-items: center;
         align-items: center;
         display: flex;
-        flex-direction: column;     
-        margin: 0;
+        flex-direction: column;
     }
+
     .thumbnails {
-        padding: 0 14vw;
         display: flex;
         flex-direction: row;
         gap: 10px;
@@ -35,61 +30,76 @@
         img {
             border-radius: 5%;
             width: 20%;
+            max-width: 300px;
+            height: auto;
+            max-height: 200px;
         }
     }
+
     .background-container {
-        position: relative;
         width: 100%;
-        height: 50vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        height: 500px;
     }
-    .backgroundimg{
-        height: 50vh;
+
+    .backgroundimg {
         width: 100%;
-        filter: blur(5px);
+        filter: brightness(50%);
+        max-height: 500px;
     }
+
     .overlay-text {
-        position: absolute;
-        top: 5%;
-        left: 20%;
+        position: relative;
+        top: -350px;
+        left: 100px;
         color: white;
         font-size: 3rem;
         font-weight: bold;
     }
-    .overlay-text-small{
-        top: 25%;
+
+    .overlay-text-small {
+        margin-top: 10px;
         font-size: 1.5rem;
         font-weight: normal;
     }
-    .overlay-button{
-        padding: 10px;
-        top: 80%;
-        left:20%;
-        position: absolute;
+
+    .overlay-button {
+        position: relative;
+        top: -300px;
+        left: 100px;
+        padding: 8px 20px;
         background-color: #cd412a;
         border-radius: 5px;
         color: white;
         font-size: 1rem;
         border: 2px solid #cd412a;
     }
-
 </style>
-
 <body>
-    <div class="background-container">
-        <img class="backgroundimg" src="image copy.png" alt="">
-        <h1 class="overlay-text">Bem Vindo ao Schloß Hotel</h1>
-        <p class="overlay-text overlay-text-small"> Conforto, elegância e uma vista deslumbrante.<br> O lugar perfeito para relaxar e aproveitar uma estadia inesquecível!</p>
-        <button class="overlay-button">Faça sua Reserva</button>
+<div class="container">
+    <div class="row">
+        <div class="background-container">
+            <img class="backgroundimg" src="image copy.png" alt="">
+            <h1 class="overlay-text">Bem Vindo ao Schloß Hotel</h1>
+            <p class="overlay-text overlay-text-small"> Conforto, elegância e uma vista deslumbrante.<br> O lugar
+                perfeito
+                para
+                relaxar e aproveitar uma estadia inesquecível!</p>
+            <button class="overlay-button">Faça sua Reserva</button>
+        </div>
     </div>
-    <div class="services">
-        <h1>Serviços:</h1>
-        <p>Oferecemos serviços de alta qualidade para sua comodidade, incluindo café da manhã completo, Wi-Fi gratuito, piscina, academia, estacionamento e atendimento 24h. Tudo para garantir uma estadia confortável e inesquecível!</p>
+
+    <div class="row px-2 mt-4">
+        <div class="services">
+            <h1 class="mb-1">Serviços:</h1>
+            <p>Oferecemos serviços de alta qualidade para sua comodidade, incluindo café da manhã completo, Wi-Fi
+                gratuito,
+                piscina, academia, estacionamento e atendimento 24h. Tudo para garantir uma estadia confortável e
+                inesquecível!</p>
+        </div>
     </div>
-    <div class="images">
-        <img id="mainImage" src="image.png" alt="">
+
+    <div class="row images px-2 mt-4">
+        <img id="mainImage" src="#" alt="">
         <div class="thumbnails">
             <img src="image.png" alt="Imagem 3" onmouseover="changeImage(this)">
             <img src="img1.png" alt="Imagem 1" onmouseover="changeImage(this)">
@@ -97,15 +107,43 @@
             <img src="img3.png" alt="Imagem 4" onmouseover="changeImage(this)">
         </div>
     </div>
-    <div class="local">
+    <div class="row px-4 mt-4">
         <h1>Localização:</h1>
         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2683.224440480485!2d-53.06605151343061!3d-25.757198814354453!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94f047a2e9c81dd3%3A0xe5d0bda19ea24e41!2sHotel%20Lago%20Dourado!5e0!3m2!1spt-BR!2sbr!4v1739664837077!5m2!1spt-BR!2sbr"
-            width="1140px" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
+                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
         </iframe>
     </div>
+</div>
+
 </body>
-<script>
+<script type="module">
+    import db from '/js/db/index.js';
+
+    db.users.checkUserLoggedIn();
+    let thumnails = document.querySelector('.thumbnails');
+    thumnails.innerHTML = '';
+
+    db.photos.listAll().forEach(photo => {
+        const img = document.createElement('img');
+        const key = photo.key;
+
+        console.log(photo);
+
+        db.fileStorage.load(key).then(blob => {
+            img.src = URL.createObjectURL(blob);
+            let main = document.getElementById("mainImage");
+            console.log(main.src)
+            if (main.src.endsWith("#")) {
+                main.src = img.src;
+            }
+        });
+
+        img.onmouseover = () => changeImage(img);
+        thumnails.appendChild(img);
+    });
+
+
     function changeImage(imgElement) {
         document.getElementById("mainImage").src = imgElement.src;
     }

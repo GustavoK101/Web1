@@ -56,7 +56,7 @@
             });
 
             clone.querySelector("button").addEventListener("click", () => {
-                db.photos.remove(photo.key);
+                db.photos.remove({key: photo.key});
                 db.fileStorage.delete(photo.key);
                 render();
             });
