@@ -7,6 +7,131 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-Bookings
+<div class="container recent-bookings">
+    <div class="row">
+        <h2>Reservas</h2>
+    </div>
+    <div class="row">
+        <input type="text" id="filter" class="input" placeholder="Filtrar por quarto ou email do cliente">
+    </div>
+
+    <div class="divider"></div>
+    <table>
+        <thead>
+        <tr>
+            <th>Quarto</th>
+            <th>Email</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Confirmação</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- dados adicionados via js-->
+        </tbody>
+    </table>
+</div>
+
+<script type="module">
+    import db from '/js/db/index.js';
+
+    db.users.checkUserLoggedIn();
+
+    // Fetch recent bookings from the database
+    const bookings = db.bookings.listAll()
+    const rooms = db.rooms.listAll();
+    const roomMap = new Map();
+    rooms.forEach(room => {
+        roomMap.set(room.id, room);
+    });
+
+    const tbody = document.querySelector("tbody");
+
+    const render = () => {
+        tbody.innerHTML = "";
+
+        bookings.forEach(booking => {
+            const room = roomMap.get(booking.roomId) || {name: "[apagado]"};
+
+
+            const checkinDate = new Date(booking.checkIn).toLocaleDateString("pt-BR");
+            const checkoutDate = new Date(booking.checkOut).toLocaleDateString("pt-BR");
+
+
+            const tr = document.createElement("tr");
+
+            const attributes = [room.name, booking.userEmail, checkinDate, checkoutDate];
+            attributes.forEach(attr => {
+                const td = document.createElement("td");
+                td.textContent = attr;
+                tr.appendChild(td);
+            });
+
+            const td = document.createElement("td");
+            const confirmButton = document.createElement("button");
+            confirmButton.classList.add("confirm-button");
+
+            let confirmarReserva = () => {
+                db.bookings.confirmBooking(booking.id);
+                booking.confirmed = true;
+                confirmButton.textContent = "Revogar";
+                tr.classList.remove("unconfirmed");
+                tr.classList.add("confirmed");
+            };
+            let revogarReserva = () => {
+                booking.confirmed = false;
+                db.bookings.revokeConfirmation(booking.id);
+                confirmButton.textContent = "Confirmar";
+                confirmButton.disabled = false;
+                tr.classList.remove("confirmed");
+                tr.classList.add("unconfirmed");
+            };
+
+            let toggleButton = () => {
+                if (booking.confirmed) {
+                    revogarReserva();
+                } else {
+                    confirmarReserva();
+                }
+                render();
+            };
+
+
+            td.appendChild(confirmButton);
+            tr.appendChild(td);
+
+            confirmButton.addEventListener("click", toggleButton);
+
+            if (!booking.confirmed) {
+                confirmButton.textContent = "Confirmar";
+                tr.classList.add("unconfirmed");
+            } else {
+                confirmButton.textContent = "Revogar";
+                tr.classList.add("confirmed");
+            }
+            tbody.appendChild(tr);
+
+
+        });
+    }
+
+    // reload for input events on filter
+    document.getElementById("filter").addEventListener("input", () => {
+        const filter = document.getElementById("filter").value.toLowerCase();
+
+        bookings.splice(0, bookings.length, ...db.bookings.listAll().filter(booking => {
+            const room = roomMap.get(booking.roomId) || {name: "[apagado]"};
+            return room.name.toLowerCase().includes(filter) || booking.userEmail.toLowerCase().includes(filter);
+        }));
+
+
+        render();
+    });
+
+
+    render();
+
+</script>
+
 </body>
 </html>
