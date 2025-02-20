@@ -3,9 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-<h1>Rooms</h1>
+<style>
+    body {
+        padding: 0 20vw;
+    }
 
+    .imagemquarto {
+        margin-right: 5vw;
+        width: 20vw;
+        height: 20vh;
+        border-radius: 4%;
+    }
+
+    .reserva {
+        width: 5vw;
+        height: 5vh;
+        background-color: #cd412a;
+        border-radius: 5px;
+        color: white;
+        font-size: 1rem;
+        border: 2px solid #cd412a;
+        align-self: flex-start;
+        margin-top: auto; /* Empurra o botão para baixo */
+    }
+
+    .holder {
+        display: flex;
+        border: 1px solid;
+        border-radius: 8px;
+        margin-bottom: 3%;
+        padding: 1rem;
+    }
+
+    .texto-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex: 1; /* Ocupa o espaço disponível */
+    }
+
+    .titulo {
+        color: #cd412a;
+    }
+    .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .popup label, .popup input {
+            display: block;
+            margin: 5px 0;
+        }
+</style>
+<body>
+    <h1>Rooms</h1>
+    <div id="rooms"></div>
+    </div>
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+        <h2>Reserva de Quarto</h2>
+        <label for="userEmail">E-mail:</label>
+        <input type="email" id="userEmail" value="usuario3@email.com">
+        <label for="checkIn">Check-in:</label>
+        <input type="date" id="checkIn" value="2021-10-01">
+        <label for="checkOut">Check-out:</label>
+        <input type="date" id="checkOut" value="2021-10-01">
+        <button onclick="submitReservation()">Confirmar</button>
+        <button onclick="closePopup()">Cancelar</button>
+    </div>
+    <script type="module">
+        import db from '/js/db/index.js';
+        function openPopup() {
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+        window.openPopup = openPopup;
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+        window.closePopup = closePopup;
+        function submitReservation() {
+            const reservation = {
+                id: 3,
+                roomId: 3,
+                userEmail: document.getElementById('userEmail').value,
+                checkIn: document.getElementById('checkIn').value,
+                checkOut: document.getElementById('checkOut').value,
+                confirmed: true
+            };
+            console.log("Reserva Confirmada:", reservation);
+            closePopup();
+        }
+        window.submitReservation = submitReservation
+        const render = () => {
+            const rooms = db.rooms.listAll();
+            const roomsContainer = document.getElementById("rooms");
+    
+            roomsContainer.innerHTML = ""; // Limpa o container antes de adicionar os quartos
+    
+            rooms.forEach(room => {
+                roomsContainer.innerHTML += `
+                    <div class="flex-row holder">
+                        <img src="${room.image || '/home/image.png'}" alt="Imagem do quarto ${room.name}" class="imagemquarto">
+                        <div class="texto-container">
+                            <div>
+                                <h1 class="titulo">${room.name}</h1>
+                                <p>${room.description}</p>
+                                <p>Serviços: ${room.amenities.join(", ")}</p>
+                                <p>preço: R$ ${room.price}</p>
+                            </div>
+                            <button class="reserva" onclick="openPopup()">Reservar</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        window.onload = () => {
+            render();
+        }
+    </script>
 </body>
 </html>
