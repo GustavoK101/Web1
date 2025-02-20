@@ -23,6 +23,8 @@
         Object.keys(localStorage).forEach(key => localStorage.removeItem(key));
         // go to /
         (window.parent || window).location.href = '/';
+
+        db.fileStorage.deleteDb();
     }
 
     document.querySelector('button').addEventListener('click', reset);

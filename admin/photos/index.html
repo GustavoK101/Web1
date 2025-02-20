@@ -5,8 +5,82 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Administração</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        img {
+            max-height: 200px;
+            max-width: 200px;
+        }
+    </style>
 </head>
 <body>
-Photos
+<div class="container">
+    <div class="row">
+        <div class="grow-1">
+            <h1>Fotos</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <label for="add-photo">Adicionar foto</label>
+            <input type="file" id="add-photo" value="Adicionar" accept="image/*">
+        </div>
+    </div>
+    <!--    photo grid only with images and a remove button-->
+    <div class="row" id="photos">
+    </div>
+</div>
+<template id="photo-template">
+    <div class="col row column mb-2">
+        <img src="#" alt="room">
+        <button class="error-button mt-1">Remover</button>
+    </div>
+</template>
+
+<script type="module">
+    import db from '/js/db/index.js';
+
+    db.users.checkUserLoggedIn();
+
+    const render = () => {
+        const photos = db.photos.listAll();
+        const photoTemplate = document.getElementById("photo-template");
+        const photosContainer = document.getElementById("photos");
+        photosContainer.innerHTML = "";
+        photos.forEach(photo => {
+            const clone = photoTemplate.content.cloneNode(true);
+            const img = clone.querySelector("img");
+            console.log(photo);
+            db.fileStorage.load(photo.key).then(blob => {
+                img.src = URL.createObjectURL(blob);
+                photosContainer.appendChild(clone);
+            });
+
+            clone.querySelector("button").addEventListener("click", () => {
+                db.photos.remove(photo.key);
+                db.fileStorage.delete(photo.key);
+                render();
+            });
+
+        });
+    };
+
+    // new photo
+    document.getElementById("add-photo").addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+            const key = `photo-${db.photos.listAll().length + 1}`;
+            db.fileStorage.save(key, file);
+            db.photos.save({key});
+            render();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // remove photo
+
+    render();
+
+</script>
 </body>
 </html>
