@@ -101,6 +101,11 @@
     max-width: 100%;
 }
 
+/* add padding to all col-* classes */
+[class*="col-"] {
+    padding: 0 15px;
+}
+
 /*
   Media query for small devices (<= 768px).
   You can rename or adjust .col-sm-# classes as needed.

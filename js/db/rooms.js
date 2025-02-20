@@ -142,6 +142,7 @@ const defaultRooms = [
     price: 220,
   },
 ];
+
 const roomData = loadDb("rooms");
 
 if (!roomData || roomData.length === 0) {
@@ -164,6 +165,8 @@ export default {
     return room;
   },
   save: (room) => {
+    const maxId = Math.max(...roomData.map((r) => r.id));
+    room.id = maxId + 1;
     roomData.push(room);
     saveRooms();
   },
