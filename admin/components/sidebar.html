@@ -14,9 +14,23 @@
         <li><a href="../photos/" target="main">Fotos</a></li>
         <li><a href="../bookings/" target="main">Reservas</a></li>
         <li><a href="/" target="_parent">Voltar</a></li>
+        <li><a href="#" id="logout" target="_top">Sair</a></li>
     </ul>
 </nav>
 
 
+<script type="module">
+    import db from '/js/db/index.js';
+    db.users.checkUserLoggedIn();
+
+    document.getElementById("logout").addEventListener("click", () => {
+        db.users.saveCurrentUser(null);
+        window.location.href = "/admin/login.html";
+    });
+
+    
+
+</script>
 </body>
+
 </html>
