@@ -1,144 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Title</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<style>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <style>
     body {
-        padding: 0 20vw;
+      padding: 0 20vw;
     }
 
     .imagemquarto {
-        margin-right: 5vw;
-        width: 20vw;
-        height: 20vh;
-        border-radius: 4%;
+      margin-right: 5vw;
+      width: 20vw;
+      height: 20vh;
+      border-radius: 4%;
     }
 
     .reserva {
-        width: 5vw;
-        height: 5vh;
-        background-color: #cd412a;
-        border-radius: 5px;
-        color: white;
-        font-size: 1rem;
-        border: 2px solid #cd412a;
-        align-self: flex-start;
-        margin-top: auto; /* Empurra o botão para baixo */
+      width: 5vw;
+      height: 5vh;
+      background-color: #cd412a;
+      border-radius: 5px;
+      color: white;
+      font-size: 1rem;
+      border: 2px solid #cd412a;
+      align-self: flex-start;
+      margin-top: auto; /* Empurra o botão para baixo */
     }
 
     .holder {
-        display: flex;
-        border: 1px solid;
-        border-radius: 8px;
-        margin-bottom: 3%;
-        padding: 1rem;
+      display: flex;
+      border: 1px solid;
+      border-radius: 8px;
+      margin-bottom: 3%;
+      padding: 1rem;
     }
 
     .texto-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        flex: 1; /* Ocupa o espaço disponível */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1; /* Ocupa o espaço disponível */
     }
 
     .titulo {
-        color: #cd412a;
+      color: #cd412a;
     }
     .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            border-radius: 5px;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-        }
-        .popup label, .popup input {
-            display: block;
-            margin: 5px 0;
-        }
-</style>
-<body>
-    <h1>Rooms</h1>
-    <div id="rooms"></div>
-    </div>
+      z-index: 100000;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .popup label,
+    .popup input {
+      display: block;
+      margin: 5px 0;
+    }
+    .price {
+      font-weight: bold;
+    }
+  </style>
+  <body>
+    <div id="rooms" class="mt-4"></div>
     <div class="overlay" id="overlay"></div>
-    <div class="popup" id="popup">
+    <template id="popup-template">
+      <div class="popup" id="popup">
         <h2>Reserva de Quarto</h2>
         <label for="userEmail">E-mail:</label>
-        <input type="email" id="userEmail" value="usuario3@email.com">
+        <input type="email" name="userEmail" value="cliente@gmail.com" />
         <label for="checkIn">Check-in:</label>
-        <input type="date" id="checkIn" value="2021-10-01">
+        <input type="date" name="checkIn" value="2025-02-25" />
         <label for="checkOut">Check-out:</label>
-        <input type="date" id="checkOut" value="2021-10-01">
-        <button onclick="submitReservation()">Confirmar</button>
-        <button onclick="closePopup()">Cancelar</button>
-    </div>
+        <input type="date" name="checkOut" value="2025-02-25" />
+        <div class="row">
+          <div class="col-6" style="padding: 4px">
+            <button class="cancel error-button w-100">Cancelar</button>
+          </div>
+          <div class="col-6" style="padding: 4px">
+            <button class="confirm primary-button w-100">Confirmar</button>
+          </div>
+
+          <input type="hidden" id="roomId" />
+        </div>
+      </div>
+    </template>
+    <template id="success-template">
+      <div class="popup pa-4 container" id="popup">
+        <h2 class="mb-2">Reserva Realizada</h2>
+        <p>Reserva realizada com sucesso!</p>
+        <div class="row text-right">
+          <button class="confirm primary-button">OK</button>
+        </div>
+      </div>
+    </template>
+
+    <template id="room-template">
+      <div class="flex-row holder">
+        <img
+          src="/home/placeholder.png"
+          alt="Imagem do quarto ${room.name}"
+          class="imagemquarto"
+        />
+        <div class="texto-container">
+          <div>
+            <h1 class="name">${room.name}</h1>
+            <p class="description">${room.description}</p>
+            <p class="amenities">Serviços: ${room.amenities.join(", ")}</p>
+            <p class="price">preço: R$ ${room.price}</p>
+          </div>
+          <button class="reserva">Reservar</button>
+        </div>
+      </div>
+    </template>
     <script type="module">
-        import db from '/js/db/index.js';
-        function openPopup() {
-            document.getElementById('popup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
-        window.openPopup = openPopup;
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-        window.closePopup = closePopup;
-        function submitReservation() {
-            const reservation = {
-                id: 3,
-                roomId: 3,
-                userEmail: document.getElementById('userEmail').value,
-                checkIn: document.getElementById('checkIn').value,
-                checkOut: document.getElementById('checkOut').value,
-                confirmed: true
-            };
-            console.log("Reserva Confirmada:", reservation);
-            closePopup();
-        }
-        window.submitReservation = submitReservation
-        const render = () => {
-            const rooms = db.rooms.listAll();
-            const roomsContainer = document.getElementById("rooms");
-    
-            roomsContainer.innerHTML = ""; // Limpa o container antes de adicionar os quartos
-    
-            rooms.forEach(room => {
-                roomsContainer.innerHTML += `
-                    <div class="flex-row holder">
-                        <img src="${room.image || '/home/image.png'}" alt="Imagem do quarto ${room.name}" class="imagemquarto">
-                        <div class="texto-container">
-                            <div>
-                                <h1 class="titulo">${room.name}</h1>
-                                <p>${room.description}</p>
-                                <p>Serviços: ${room.amenities.join(", ")}</p>
-                                <p>preço: R$ ${room.price}</p>
-                            </div>
-                            <button class="reserva" onclick="openPopup()">Reservar</button>
-                        </div>
-                    </div>
-                `;
+      import db from "/js/db/index.js";
+
+      const render = () => {
+        const rooms = db.rooms.listAll();
+        const roomsContainer = document.getElementById("rooms");
+
+        roomsContainer.innerHTML = ""; // Limpa o container antes de adicionar os quartos
+
+        rooms.forEach((room) => {
+          const template = document.getElementById("room-template");
+          const clone = template.content.cloneNode(true);
+
+          const nameEl = clone.querySelector(".name");
+          nameEl.innerText = room.name;
+
+          const descriptionEl = clone.querySelector(".description");
+          descriptionEl.innerText = room.description;
+
+          const amenitiesEl = clone.querySelector(".amenities");
+
+          amenitiesEl.innerText = room.amenities.join(", ");
+
+          const priceEl = clone.querySelector(".price");
+          priceEl.innerText = `R$ ${room.price},00`;
+
+          const img = clone.querySelector("img");
+
+          (room.images || []).forEach((key) => {
+            db.fileStorage.load(key).then((blob) => {
+              img.src = URL.createObjectURL(blob);
             });
-        }
-        window.onload = () => {
-            render();
-        }
+          });
+
+          const reservarButton = clone.querySelector("button");
+
+          reservarButton.setAttribute("data-room-id", room.id);
+
+          reservarButton.addEventListener("click", () => {
+            const popupTemplate = document.getElementById("popup-template");
+            const popup = popupTemplate.content.cloneNode(true);
+            document.getElementById("overlay").style.display = "block";
+
+            const roomId = reservarButton.getAttribute("data-room-id");
+            const roomIdInput = popup.querySelector("#roomId");
+            roomIdInput.value = roomId;
+
+            const confirmButton = popup.querySelector(".confirm");
+            const cancelButton = popup.querySelector(".cancel");
+
+            confirmButton.addEventListener("click", () => {
+              const popup = document.getElementById("popup");
+              const email = popup.querySelector("input[name=userEmail]");
+              const checkInEl = popup.querySelector("input[name=checkIn]");
+              const checkOutEl = popup.querySelector("input[name=checkOut]");
+              const roomIdEl = popup.querySelector("#roomId");
+
+              const userEmail = email.value;
+              const checkIn = checkInEl.value;
+              const checkOut = checkOutEl.value;
+              const roomId = parseInt(roomIdEl.value);
+
+              console.log({
+                userEmail,
+                checkIn,
+                checkOut,
+                roomId,
+              });
+
+              db.bookings.save({
+                roomId,
+                userEmail,
+                checkIn,
+                checkOut,
+              });
+
+              popup.remove();
+
+              const successTemplate =
+                document.getElementById("success-template");
+              const successPopup = successTemplate.content.cloneNode(true);
+              document.getElementById("overlay").style.display = "block";
+
+              const successButton = successPopup.querySelector(".confirm");
+
+              successButton.addEventListener("click", () => {
+                document.getElementById("popup").remove();
+                document.getElementById("overlay").style.display = "none";
+              });
+
+              document.body.appendChild(successPopup);
+            });
+
+            cancelButton.addEventListener("click", () => {
+              document.getElementById("popup").remove();
+              document.getElementById("overlay").style.display = "none";
+            });
+
+            document.body.appendChild(popup);
+          });
+
+          roomsContainer.appendChild(clone);
+        });
+      };
+      window.onload = () => {
+        render();
+      };
     </script>
-</body>
+  </body>
 </html>

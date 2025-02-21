@@ -45,7 +45,7 @@ const today = new Date();
 const thirtyDaysAgo = new Date(today);
 thirtyDaysAgo.setDate(today.getDate() - 30);
 
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 20; i++) {
   const checkIn = new Date(
     thirtyDaysAgo.getTime() +
       Math.random() * (today.getTime() - thirtyDaysAgo.getTime()),
