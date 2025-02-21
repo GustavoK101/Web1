@@ -49,7 +49,7 @@
         photos.forEach(photo => {
             const clone = photoTemplate.content.cloneNode(true);
             const img = clone.querySelector("img");
-            console.log(photo);
+            
             db.fileStorage.load(photo.key).then(blob => {
                 img.src = URL.createObjectURL(blob);
                 photosContainer.appendChild(clone);

@@ -1,166 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Administração</title>
-    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet" />
     <script src="/js/db/index.js" type="module"></script>
     <style>
+      label {
+        display: block;
+        color: #333;
+        margin-bottom: 5px;
+        font-size: 0.75em;
+        width: 100%;
+      }
+
+      input {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      input[type="submit"] {
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #555;
+        }
+
+        &:active {
+          background-color: #777;
+        }
+      }
+
+      #amenities-container {
+        display: flex;
+        flex-wrap: wrap;
 
         label {
-            display: block;
-            color: #333;
-            margin-bottom: 5px;
-            font-size: 0.75em;
-            width: 100%;
-
+          display: inline;
         }
+      }
 
-        input {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+      input[type="checkbox"] {
+        margin-right: 5px;
+        margin-left: 10px;
+        display: inline-block;
+      }
+
+      label,
+      input:not([type="checkbox"]),
+      textarea {
+        width: 100%;
+      }
+
+      .image-preview {
+        img {
+          max-width: 100%;
         }
-
-        input[type="submit"] {
-            background-color: #333;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-
-            &:hover {
-                background-color: #555;
-            }
-
-            &:active {
-                background-color: #777;
-            }
-        }
-
-        #amenities-container {
-            display: flex;
-            flex-wrap: wrap;
-
-
-            label {
-                display: inline;
-            }
-        }
-
-        input[type="checkbox"] {
-            margin-right: 5px;
-            margin-left: 10px;
-            display: inline-block;
-
-        }
-
-        label, input:not([type="checkbox"]), textarea {
-            width: 100%;
-        }
-
+      }
     </style>
-</head>
-<body>
-<form>
-
-    <div class="container column card ml-1">
+  </head>
+  <body>
+    <form>
+      <div class="container column card ml-1">
         <div class="row">
-            <div class="grow-1">
-                <h1>Novo Quarto</h1>
-            </div>
-            <div class="col-auto">
-                <input class="primary-button" type="submit" value="Salvar">
-            </div>
+          <div class="grow-1">
+            <h1>Novo Quarto</h1>
+          </div>
+          <div class="col-auto">
+            <input class="primary-button" type="submit" value="Salvar" />
+          </div>
         </div>
         <div class="row">
-            <div class="col-6">
-                <label for="name">Nome</label>
-                <input type="text" id="name" required>
-            </div>
+          <div class="col-6">
+            <label for="name">Nome</label>
+            <input type="text" id="name" required />
+          </div>
+          <div class="col-6">
+            <label for="imagens">Imagens</label>
+            <input
+              type="file"
+              id="add-photos"
+              multiple
+              value="Adicionar imagens"
+              accept="image/*"
+            />
+          </div>
+          <div class="col-12">
+            <div class="row" id="image-container"></div>
+          </div>
 
-            <div class="col-12">
-                <label for="description">Descrição</label>
-                <textarea rows="5" type="text" id="description" required></textarea>
-            </div>
-
+          <div class="col-12">
+            <label for="description">Descrição</label>
+            <textarea rows="5" type="text" id="description" required></textarea>
+          </div>
         </div>
         <div class="row">
-
-            <div class="col col-4">
-                <label for="price">Preço</label>
-                <input type="number" id="price" required>
-            </div>
-            <div class="col col-4">
-                <label for="capacity">Capacidade</label>
-                <input type="number" id="capacity" required>
-            </div>
-            <div class="col col-12">
-                <label>Comodidades</label>
-                <div id="amenities-container" class="row"></div>
-                <!-- filled dinamically -->
-            </div>
+          <div class="col col-4">
+            <label for="price">Preço</label>
+            <input type="number" id="price" required />
+          </div>
+          <div class="col col-4">
+            <label for="capacity">Capacidade</label>
+            <input type="number" id="capacity" required />
+          </div>
+          <div class="col col-12">
+            <label>Comodidades</label>
+            <div id="amenities-container" class="row"></div>
+            <!-- filled dinamically -->
+          </div>
         </div>
+      </div>
+    </form>
+    <template id="image-template">
+      <div class="col-2 row column mb-2 image-preview">
+        <img src="#" alt="room" />
+        <button class="error-button mt-1">Remover</button>
+      </div>
+    </template>
 
+    <script type="module">
+      import db from "/js/db/index.js";
 
-    </div>
-</form>
-<template id="room-template">
-    <tr>
-        <td>nome</td>
-        <td>descrição</td>
-        <td>amenidades</td>
-        <td>preço</td>
-        <td>capacidade</td>
-        <td style="min-width: 200px;">
-            <button class="edit primary-button">Editar</button>
-            <button class="delete error-button">Excluir</button>
-        </td>
-    </tr>
-</template>
+      const amenities = db.amenities.listAll();
 
-<script type="module">
-    import db from '/js/db/index.js';
-
-    const amenities = db.amenities.listAll();
-
-    const render = () => {
-
-        amenities.forEach(amenity => {
-            const amenityElement = document.createElement("div");
-            amenityElement.innerHTML = `
+      const render = () => {
+        document.getElementById("amenities-container").innerHTML = "";
+        amenities.forEach((amenity) => {
+          const amenityElement = document.createElement("div");
+          amenityElement.innerHTML = `
                 <input type="checkbox" id="${amenity}" value="${amenity}" class="amenity">
                 <label for="${amenity}">
                     ${amenity}
                 </label>
             `;
-            document.getElementById("amenities-container").appendChild(amenityElement);
+          document
+            .getElementById("amenities-container")
+            .appendChild(amenityElement);
+        });
+      };
+
+      // on submit
+      document.querySelector("form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const name = document.getElementById("name").value;
+        const description = document.getElementById("description").value;
+        const price = document.getElementById("price").value;
+        const capacity = document.getElementById("capacity").value;
+        const amenities = Array.from(
+          document.querySelectorAll(".amenity:checked")
+        ).map((amenity) => amenity.value);
+
+        const images = Array.from(document.querySelectorAll("[data-key]")).map(img => img.getAttribute("data-key"))
+
+
+
+        db.rooms.save({ name, description, price, capacity, amenities, images });
+        window.location.href = "/admin/rooms/";
+      });
+
+      const imagesContainer = document.getElementById("image-container");
+
+      document
+        .getElementById("add-photos")
+        .addEventListener("change", (event) => {
+          for (const file of event.target.files) {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const uuid = Math.random().toString(36).slice(2, 10);
+              const key = `room-${uuid}`;
+              db.fileStorage.save(key, file).then(() => {
+                db.fileStorage.load(key).then((blob) => {
+                  const imageTemplate =
+                    document.getElementById("image-template");
+                  const div = imageTemplate.content.cloneNode(true);
+
+                  const img = div.querySelector("img");
+
+                  img.src = URL.createObjectURL(blob);
+
+                  img.setAttribute("data-key", key);
+
+                  div.querySelector("button").addEventListener("click", (e) => {
+                    e.preventDefault();
+                    db.fileStorage.delete(key);
+                    const query = `[data-key=${key}]`;
+                    const el = document.querySelector[query];
+                    e.target.parentElement.remove();
+                    render();
+                  });
+
+                  imagesContainer.appendChild(div);
+                });
+              });
+
+              render();
+            };
+            reader.readAsDataURL(file);
+          }
         });
 
-
-        // on submit
-        document.querySelector("form").addEventListener("submit", (event) => {
-            event.preventDefault();
-            const name = document.getElementById("name").value;
-            const description = document.getElementById("description").value;
-            const price = document.getElementById("price").value;
-            const capacity = document.getElementById("capacity").value;
-            const amenities = Array.from(document.querySelectorAll(".amenity:checked")).map(amenity => amenity.value);
-
-            db.rooms.save({name, description, price, capacity, amenities});
-            window.location.href = "/admin/rooms/";
-        });
-
-    }
-
-    render();
-
-</script>
-
-
-</body>
+      render();
+    </script>
+  </body>
 </html>

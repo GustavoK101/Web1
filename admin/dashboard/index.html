@@ -15,15 +15,15 @@
         </div>
         <div class="stat-card">
             <h3>Quartos Disponíveis</h3>
-            <p>15/40</p>
+            <p id="rooms-available">n/a</p>
         </div>
         <div class="stat-card">
             <h3>Serviços Ativos</h3>
-            <p>8</p>
+            <p id="service-count">8</p>
         </div>
         <div class="stat-card">
             <h3>Fotos Cadastradas</h3>
-            <p>45</p>
+            <p id="photo-count">45</p>
         </div>
     </div>
 
@@ -126,6 +126,9 @@
 
             confirmButton.addEventListener("click", toggleButton);
 
+            
+
+
             if (!booking.confirmed) {
                 confirmButton.textContent = "Confirmar";
                 tr.classList.add("unconfirmed");
@@ -216,6 +219,27 @@
         });
 
         rows.forEach(row => occupationStats.appendChild(row));
+
+
+        const roomsAvailableP = document.getElementById("rooms-available");
+        const roomCount = rooms.length;
+
+        roomsAvailableP.innerText = roomCount;
+
+        const serviceP = document.getElementById("service-count");
+
+        const amenityCount = db.amenities.listAll().length;
+
+        serviceP.innerText = amenityCount;
+
+
+        const photoCountP = document.getElementById("photo-count");
+
+        const photoCount = db.photos.listAll().length;
+
+        photoCountP.innerText = photoCount;
+
+
     };
 
     render();
